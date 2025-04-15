@@ -5,7 +5,6 @@ const prisma = new PrismaClient();
 
 const createAdmin = async (payload: any) => {
   const hashedPassword = UserUtils.hashedPassword(payload.password);
-  console.log(hashedPassword);
   const userData = {
     password: hashedPassword,
     email: payload.admin.email,
