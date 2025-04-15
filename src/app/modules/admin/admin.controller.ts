@@ -1,10 +1,17 @@
 import status from "http-status";
 import { AdminService } from "./admin.service";
 import catchAsync from "../../utils/catchAsync";
+import { AdminConstants } from "./admin.constant";
 import sendResponse from "../../utils/sendResponse";
+import pickValidQueryFields from "../../utils/pickValidField";
 
 const getAdmins = catchAsync(async (req, res) => {
-  const result = await AdminService.getAdmins(req.query);
+  const filteredQueryFields = pickValidQueryFields(
+    req.query,
+    AdminConstants.pickFields
+  );
+
+  const result = await AdminService.getAdmins(filteredQueryFields);
 
   sendResponse(res, {
     statusCode: status.OK,

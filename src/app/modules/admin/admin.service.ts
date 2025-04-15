@@ -9,7 +9,7 @@ const getAdmins = async (query: any) => {
 
   if (searchTerm)
     andConditions.push({
-      OR: AdminConstants.AdminSearchTermFields.map((field) => ({
+      OR: AdminConstants.searchTermFields.map((field) => ({
         [field]: {
           contains: searchTerm,
           mode: "insensitive",

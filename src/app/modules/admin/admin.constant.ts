@@ -1,3 +1,4 @@
-const AdminSearchTermFields = ["name", "email"];
+const searchTermFields = ["name", "email"];
+const pickFields = ["searchTerm", "email", "contactNumber"];
 
-export const AdminConstants = { AdminSearchTermFields };
+export const AdminConstants = { searchTermFields, pickFields };
