@@ -4,17 +4,26 @@ import { Prisma, PrismaClient } from "../../../generated/prisma";
 const prisma = new PrismaClient();
 
 const getAdmins = async (query: any) => {
+  const { searchTerm, ...filterQuery } = query;
   const andConditions: Prisma.AdminWhereInput[] = [];
 
-  if (query.searchTerm)
+  if (searchTerm)
     andConditions.push({
       OR: AdminConstants.AdminSearchTermFields.map((field) => ({
         [field]: {
-          contains: query.searchTerm,
+          contains: searchTerm,
           mode: "insensitive",
         },
       })),
     });
+
+  if (Object.keys(filterQuery).length > 0) {
+    andConditions.push({
+      AND: Object.keys(filterQuery).map((key) => ({
+        [key]: { equals: filterQuery[key] },
+      })),
+    });
+  }
 
   const whereConditions = { AND: andConditions };
 
