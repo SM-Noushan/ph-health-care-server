@@ -1,7 +1,6 @@
+import prisma from "../../utils/prisma";
 import { UserUtils } from "./user.utils";
-import { PrismaClient, UserRole } from "../../../generated/prisma";
-
-const prisma = new PrismaClient();
+import { UserRole } from "../../../generated/prisma";
 
 const createAdmin = async (payload: any) => {
   const hashedPassword = UserUtils.hashedPassword(payload.password);
