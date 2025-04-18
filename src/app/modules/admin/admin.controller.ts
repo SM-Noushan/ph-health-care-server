@@ -50,4 +50,32 @@ const updateAdmin = catchAsync(async (req, res) => {
   });
 });
 
-export const AdminController = { getAdmins, getAdmin, updateAdmin };
+const deleteAdmin = catchAsync(async (req, res) => {
+  await AdminService.deleteAdmin(req.params.id);
+
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: "Admin deleted successfully",
+    data: null,
+  });
+});
+
+const softDeleteAdmin = catchAsync(async (req, res) => {
+  await AdminService.softDeleteAdmin(req.params.id);
+
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: "Admin deleted successfully",
+    data: null,
+  });
+});
+
+export const AdminController = {
+  getAdmins,
+  getAdmin,
+  updateAdmin,
+  deleteAdmin,
+  softDeleteAdmin,
+};

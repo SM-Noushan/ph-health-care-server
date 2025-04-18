@@ -1,6 +1,6 @@
 import prisma from "../../utils/prisma";
 import { AdminConstants } from "./admin.constant";
-import { Prisma } from "../../../generated/prisma";
+import { Prisma, UserStatus } from "../../../generated/prisma";
 import calculatePagination from "../../utils/calculatePagination";
 
 const getAdmins = async (query: any) => {
@@ -78,4 +78,34 @@ const updateAdmin = async (
   return admin;
 };
 
-export const AdminService = { getAdmins, getAdmin, updateAdmin };
+const deleteAdmin = async (id: string) => {
+  await prisma.$transaction(async (tx) => {
+    const admin = await tx.admin.delete({
+      where: { id },
+    });
+    await tx.user.delete({
+      where: { email: admin.email },
+    });
+  });
+};
+
+const softDeleteAdmin = async (id: string) => {
+  await prisma.$transaction(async (tx) => {
+    const admin = await tx.admin.update({
+      where: { id },
+      data: { isDeleted: true },
+    });
+    await tx.user.update({
+      where: { email: admin.email },
+      data: { status: UserStatus.DELETED },
+    });
+  });
+};
+
+export const AdminService = {
+  getAdmins,
+  getAdmin,
+  updateAdmin,
+  deleteAdmin,
+  softDeleteAdmin,
+};
