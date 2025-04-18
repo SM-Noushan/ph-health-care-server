@@ -6,11 +6,13 @@ import AppError from "../../error/AppError";
 import { UserUtils } from "../user/user.utils";
 import decodeToken from "../../utils/decodeToken";
 import { IJwtTokenPayload, ILoginUser } from "./auth.interface";
+import { UserStatus } from "../../../generated/prisma";
 
 const loginUser = async (payload: ILoginUser) => {
   const user = await prisma.user.findUniqueOrThrow({
     where: {
       email: payload.email,
+      status: UserStatus.ACTIVE
     },
   });
 
@@ -49,6 +51,7 @@ const refreshToken = async (token: string) => {
   const isUserExists = await prisma.user.findUniqueOrThrow({
     where: {
       email: decodedData.email,
+      status: UserStatus.ACTIVE
     },
   });
 
