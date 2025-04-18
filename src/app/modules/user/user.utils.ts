@@ -5,4 +5,8 @@ const hashedPassword = (password: string): string => {
   return bcrypt.hashSync(password, config.saltRounds);
 };
 
-export const UserUtils = { hashedPassword };
+const comparePassword = (password: string, hashedPassword: string): boolean => {
+  return bcrypt.compareSync(password, hashedPassword);
+};
+
+export const UserUtils = { hashedPassword, comparePassword };
