@@ -1,9 +1,10 @@
 import prisma from "../../utils/prisma";
 import { AdminConstants } from "./admin.constant";
-import { Admin, Prisma, UserStatus } from "../../../generated/prisma";
+import { IAdminFilterRequest } from "./admin.interface";
 import calculatePagination from "../../utils/calculatePagination";
+import { Admin, Prisma, UserStatus } from "../../../generated/prisma";
 
-const getAdmins = async (query: any) => {
+const getAdmins = async (query: IAdminFilterRequest) => {
   const {
     searchTerm,
     page,
@@ -28,7 +29,7 @@ const getAdmins = async (query: any) => {
   if (Object.keys(filterQuery).length > 0) {
     andConditions.push({
       AND: Object.keys(filterQuery).map((key) => ({
-        [key]: { equals: filterQuery[key] },
+        [key]: { equals: (filterQuery as any)[key] },
       })),
     });
   }

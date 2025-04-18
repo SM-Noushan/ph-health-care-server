@@ -2,6 +2,8 @@ import { ErrorRequestHandler } from "express";
 import { TErrorSource } from "../interface/error";
 import { PrismaError } from "../error/handlePrismaError";
 import { PrismaClientKnownRequestError } from "../../generated/prisma/runtime/library";
+import { ZodError } from "zod";
+import handleZodError from "../error/handleZodError";
 
 const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
   let statusCode = error.statusCode || 500;
@@ -13,6 +15,7 @@ const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
     },
   ];
   let simplifiedError;
+  if (error instanceof ZodError) simplifiedError = handleZodError(error);
   if (error instanceof PrismaClientKnownRequestError)
     simplifiedError = PrismaError.prismaClientKnownRequestError(error);
 
