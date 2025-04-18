@@ -1,8 +1,8 @@
 import status from "http-status";
 import config from "../../config";
+import { AuthService } from "./auth.service";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
-import { AuthService } from "./auth.service";
 
 const loginUser = catchAsync(async (req, res) => {
   const result = await AuthService.loginUser(req.body);
@@ -22,6 +22,18 @@ const loginUser = catchAsync(async (req, res) => {
   });
 });
 
+const refreshToken = catchAsync(async (req, res) => {
+  const result = await AuthService.refreshToken(req.cookies.refreshToken);
+
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: "Token refreshed successfully",
+    data: result,
+  });
+});
+
 export const AuthController = {
   loginUser,
+  refreshToken,
 };
