@@ -59,4 +59,23 @@ const getAdmins = async (query: any) => {
   };
 };
 
-export const AdminService = { getAdmins };
+const getAdmin = async (id: string) => {
+  const admin = await prisma.admin.findUnique({
+    where: { id },
+  });
+
+  return admin;
+};
+
+const updateAdmin = async (
+  id: string,
+  data: Partial<Prisma.AdminUpdateInput>
+) => {
+  const admin = await prisma.admin.update({
+    where: { id },
+    data,
+  });
+  return admin;
+};
+
+export const AdminService = { getAdmins, getAdmin, updateAdmin };
