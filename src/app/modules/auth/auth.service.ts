@@ -4,7 +4,7 @@ import createToken from "./auth.utils";
 import prisma from "../../utils/prisma";
 import { JwtPayload } from "jsonwebtoken";
 import AppError from "../../error/AppError";
-import { TChangePassword } from "./auth.type";
+import { TChangePassword, TResetPassword } from "./auth.type";
 import { UserUtils } from "../user/user.utils";
 import decodeToken from "../../utils/decodeToken";
 import resetEmail from "../../sendEmail/resetEmail";
@@ -135,7 +135,28 @@ const forgotPassword = async (email: string) => {
   );
   const resetPasswordUrl = `${config.resetPasswordUrl}?id=${isUserExists.id}&token=${resetPasswordToken}`;
   await resetEmail(isUserExists.email, userInfo.name, resetPasswordUrl);
-  return { resetPasswordToken, resetPasswordUrl };
+};
+
+const resetPassword = async (token: string, payload: TResetPassword) => {
+  const decodeData = decodeToken(
+    token,
+    config.jwtResetPasswordSecret
+  ) as JwtPayload;
+
+  const hashedPassword = UserUtils.hashedPassword(payload.password);
+
+  await prisma.user.update({
+    where: {
+      id: payload.id,
+      status: UserStatus.ACTIVE,
+      email: decodeData.email,
+      role: decodeData.role,
+    },
+    data: {
+      password: hashedPassword,
+      needPasswordChange: false,
+    },
+  });
 };
 
 export const AuthService = {
@@ -143,4 +164,5 @@ export const AuthService = {
   refreshToken,
   changePassword,
   forgotPassword,
+  resetPassword,
 };
