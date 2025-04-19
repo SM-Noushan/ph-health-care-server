@@ -9,7 +9,7 @@ const router = Router();
 
 router.post(
   "/create-admin",
-  auth(UserRole.ADMIN),
+  auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
   validateRequest(adminValidation.createAdminValidationSchema),
   UserController.createAdmin
 );
