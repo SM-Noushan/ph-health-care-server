@@ -7,8 +7,10 @@ import AppError from "../../error/AppError";
 import { TChangePassword } from "./auth.type";
 import { UserUtils } from "../user/user.utils";
 import decodeToken from "../../utils/decodeToken";
+import resetEmail from "../../sendEmail/resetEmail";
 import { UserStatus } from "../../../generated/prisma";
 import { IJwtTokenPayload, ILoginUser } from "./auth.interface";
+import { Admin, UserRole } from "./../../../generated/prisma/index.d";
 
 const loginUser = async (payload: ILoginUser) => {
   const user = await prisma.user.findUniqueOrThrow({
@@ -92,8 +94,53 @@ const changePassword = async (user: JwtPayload, payload: TChangePassword) => {
   });
 };
 
+const forgotPassword = async (email: string) => {
+  const isUserExists = await prisma.user.findUniqueOrThrow({
+    where: {
+      email: email,
+      status: UserStatus.ACTIVE,
+    },
+  });
+  let userInfo: Admin = await prisma.admin.findUniqueOrThrow({
+    where: {
+      email: isUserExists.email,
+    },
+  });
+  // if (
+  //   isUserExists.role === UserRole.SUPER_ADMIN ||
+  //   isUserExists.role === UserRole.ADMIN
+  // )
+  // userInfo = await prisma.admin.findUniqueOrThrow({
+  //   where: {
+  //     email: isUserExists.email,
+  //   },
+  // });
+  // else if (isUserExists.role === UserRole.SUPER_ADMIN)
+  //   userInfo = await prisma.doctor.findUniqueOrThrow({
+  //     where: {
+  //       email: isUserExists.email,
+  //     },
+  //   });
+  // else isUserExists.role === UserRole.SUPER_ADMIN;
+  // userInfo = await prisma.patient.findUniqueOrThrow({
+  //   where: {
+  //     email: isUserExists.email,
+  //   },
+  // });
+
+  const resetPasswordToken = createToken(
+    { email: isUserExists.email, role: isUserExists.role },
+    config.jwtResetPasswordSecret,
+    config.jwtResetPasswordExpiresIn
+  );
+  const resetPasswordUrl = `${config.resetPasswordUrl}?id=${isUserExists.id}&token=${resetPasswordToken}`;
+  await resetEmail(isUserExists.email, userInfo.name, resetPasswordUrl);
+  return { resetPasswordToken, resetPasswordUrl };
+};
+
 export const AuthService = {
   loginUser,
   refreshToken,
   changePassword,
+  forgotPassword,
 };

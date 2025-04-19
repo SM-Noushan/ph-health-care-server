@@ -1,9 +1,9 @@
-import jwt from "jsonwebtoken";
+import jwt, { Secret } from "jsonwebtoken";
 import { IJwtTokenPayload } from "./auth.interface";
 
 const createToken = (
   jwtPayload: IJwtTokenPayload,
-  secret: string,
+  secret: Secret,
   expiresIn: string
 ): string =>
   jwt.sign(

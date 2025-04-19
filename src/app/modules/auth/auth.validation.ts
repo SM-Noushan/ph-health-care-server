@@ -9,7 +9,14 @@ const changePasswordValidationSchema = z.object({
   body: changePasswordValidationSchemaBody,
 });
 
+const forgotPasswordValidationSchema = z.object({
+  body: z.object({
+    email: z.string().email("Email is required"),
+  }),
+});
+
 export const AuthValidation = {
   changePasswordValidationSchema,
   changePasswordValidationSchemaBody,
+  forgotPasswordValidationSchema,
 };
